@@ -1,0 +1,11 @@
+{
+	"id": "llm-pipelines",
+	"name": "LLM Pipelines",
+	"version": "0.1.0",
+	"minAppVersion": "0.15.0",
+	"description": "Human-in-the-loop LLM automation: run local Ollama pipelines over tagged notes and review each result before it's written.",
+	"author": "Theo Redfern-Nichols",
+	"authorUrl": "https://github.com/Theo-BRN/LLM-Pipelines",
+	"fundingUrl": "https://www.linkedin.com/in/theo-redfern-nichols-b94491187/",
+	"isDesktopOnly": true
+}

@@ -1,0 +1,41 @@
+{
+	"name": "llm-pipelines",
+	"version": "0.1.0",
+	"description": "Human-in-the-loop LLM automation for Obsidian: run local Ollama pipelines over tagged notes and review each result before it's written.",
+	"main": "main.js",
+	"type": "module",
+	"author": "Theo Redfern-Nichols",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Theo-BRN/LLM-Pipelines.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Theo-BRN/LLM-Pipelines/issues"
+	},
+	"homepage": "https://github.com/Theo-BRN/LLM-Pipelines#readme",
+	"scripts": {
+		"dev": "node esbuild.config.mjs",
+		"build": "tsc -noEmit -skipLibCheck && node esbuild.config.mjs production",
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"lint": "eslint .",
+		"test": "vitest run",
+		"test:watch": "vitest"
+	},
+	"keywords": [],
+	"license": "MIT",
+	"devDependencies": {
+		"@eslint/js": "9.30.1",
+		"@types/node": "^22.0.0",
+		"esbuild": "0.25.5",
+		"eslint-plugin-obsidianmd": "0.1.9",
+		"globals": "14.0.0",
+		"jiti": "2.6.1",
+		"tslib": "2.4.0",
+		"typescript": "^5.8.3",
+		"typescript-eslint": "8.35.1",
+		"vitest": "^4.1.9"
+	},
+	"dependencies": {
+		"obsidian": "latest"
+	}
+}

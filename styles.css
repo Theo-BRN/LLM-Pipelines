@@ -1,0 +1,102 @@
+/*
+
+This CSS file will be included with your plugin, and
+available in the app when your plugin is enabled.
+
+If your plugin does not need CSS, delete this file.
+
+*/
+
+/* ---- Pipelines sidebar ---- */
+
+/* Section headings ("Pipelines", "Pending review"). The Pipelines row also
+   holds the + button, so it's a flex row. Sized to native nav items. */
+.llm-section-heading {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	font-size: var(--nav-item-size, var(--font-ui-small));
+	font-weight: var(--font-semibold, 600);
+	color: var(--text-normal);
+	padding: var(--size-4-1) var(--size-4-2);
+	margin-top: var(--size-4-2);
+}
+
+/* Pipeline rows: match Obsidian's native file-item size/hover so the list reads
+   as familiar (and isn't larger than its heading). */
+.llm-pipeline-row {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	font-size: var(--nav-item-size, var(--font-ui-small));
+	color: var(--nav-item-color, var(--text-normal));
+	padding: var(--size-4-1) var(--size-4-2);
+	border-radius: var(--radius-s);
+	cursor: pointer;
+}
+
+.llm-pipeline-row:hover {
+	background-color: var(--nav-item-background-hover, var(--background-modifier-hover));
+}
+
+.llm-pipeline-row__name {
+	flex: 1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.llm-pipeline-row__stop {
+	color: var(--text-error);
+}
+
+/* Live LLM activity, shown beneath the running pipeline. */
+.llm-activity {
+	margin: var(--size-4-1) var(--size-4-3) var(--size-4-2);
+	padding: var(--size-4-2);
+	border-radius: var(--radius-m);
+	background: var(--background-secondary);
+	border: 1px solid var(--interactive-accent);
+}
+
+.llm-activity__status {
+	font-weight: 600;
+	font-size: var(--font-ui-smaller);
+	margin-bottom: var(--size-4-1);
+}
+
+.llm-activity__output {
+	font-family: var(--font-monospace);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	white-space: pre-wrap;
+	/* Fixed height so the box scrolls internally instead of shoving the list
+	   down as new lines stream in. */
+	max-height: 8em;
+	overflow-y: auto;
+}
+
+.llm-divider {
+	margin: var(--size-4-3) 0;
+	opacity: 0.15;
+}
+
+.llm-review-empty {
+	text-align: center;
+	color: var(--text-muted);
+	font-style: italic;
+	padding: var(--size-4-4);
+}
+
+.llm-review-item {
+	padding: var(--size-4-1) var(--size-4-3);
+	border-radius: var(--radius-s);
+	color: var(--text-accent);
+	cursor: pointer;
+}
+
+.llm-review-item:hover {
+	background: var(--background-modifier-hover);
+	text-decoration: underline;
+}
