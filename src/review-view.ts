@@ -17,6 +17,9 @@ export class ReviewQueueView extends ItemView {
 	// renders. Null when no activity box is currently shown.
 	private activityStatusEl: HTMLElement | null = null;
 	private activityOutputEl: HTMLElement | null = null;
+	// Pipeline ids whose "Pending review" group is collapsed. Session-only:
+	// resets (to all-expanded) when the view is closed.
+	private collapsedReviewGroups = new Set<string>();
 
 	constructor(leaf: WorkspaceLeaf, plugin: LLMPipelinesPlugin) {
 		super(leaf);
@@ -139,17 +142,67 @@ export class ReviewQueueView extends ItemView {
 			});
 		}
 
-		items.forEach((item) => {
-			const name = item.filePath.split("/").pop() ?? item.filePath;
-			const itemEl = container.createEl("div", {
-				cls: "llm-review-item",
-				text: name.replace(/\.md$/, ""),
+		// One group per pipeline, so a busy pipeline's queue doesn't drown out
+		// the others. Groups follow the pipeline list's order above; items
+		// whose pipeline has since been deleted sink to a group at the end.
+		const byPipeline = new Map<string, ReviewItem[]>();
+		for (const item of items) {
+			const group = byPipeline.get(item.pipelineId) ?? [];
+			group.push(item);
+			byPipeline.set(item.pipelineId, group);
+		}
+		const pipelineIds = this.plugin.settings.pipelines.map((p) => p.id);
+		const groupRank = (id: string) => {
+			const rank = pipelineIds.indexOf(id);
+			return rank === -1 ? pipelineIds.length : rank;
+		};
+		const orderedGroupIds = [...byPipeline.keys()].sort(
+			(a, b) => groupRank(a) - groupRank(b),
+		);
+
+		for (const pipelineId of orderedGroupIds) {
+			const groupItems = byPipeline.get(pipelineId);
+			if (!groupItems) continue;
+
+			const pipelineName = this.plugin.settings.pipelines.find(
+				(p) => p.id === pipelineId,
+			)?.name;
+			const isCollapsed = this.collapsedReviewGroups.has(pipelineId);
+
+			const headingEl = container.createEl("div", {
+				cls: "llm-review-group-heading",
 			});
-			itemEl.onclick = () =>
-				void this.openDetailView(item).catch(
-					reportError("Couldn't open review item"),
+			const chevronEl = headingEl.createEl("span", {
+				cls: "llm-review-group-heading__chevron",
+			});
+			setIcon(chevronEl, isCollapsed ? "chevron-right" : "chevron-down");
+			headingEl.createEl("span", {
+				text: `${pipelineName ?? "Deleted pipeline"} (${groupItems.length})`,
+			});
+			headingEl.onclick = () => {
+				if (isCollapsed) this.collapsedReviewGroups.delete(pipelineId);
+				else this.collapsedReviewGroups.add(pipelineId);
+				void this.onOpen().catch(
+					reportError("Sidebar refresh failed", false),
 				);
-		});
+			};
+
+			if (isCollapsed) continue;
+
+			// Oldest first, so review order matches processing order.
+			groupItems.sort((a, b) => a.timestamp - b.timestamp);
+			for (const item of groupItems) {
+				const name = item.filePath.split("/").pop() ?? item.filePath;
+				const itemEl = container.createEl("div", {
+					cls: "llm-review-item",
+					text: name.replace(/\.md$/, ""),
+				});
+				itemEl.onclick = () =>
+					void this.openDetailView(item).catch(
+						reportError("Couldn't open review item"),
+					);
+			}
+		}
 	}
 
 	private renderActivity(parent: HTMLElement) {

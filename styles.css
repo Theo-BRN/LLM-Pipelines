@@ -89,6 +89,36 @@ If your plugin does not need CSS, delete this file.
 	padding: var(--size-4-4);
 }
 
+/* Per-pipeline sub-headings inside "Pending review". Clicking one collapses
+   or expands its group, so it's styled like a nav item. */
+.llm-review-group-heading {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	font-size: var(--font-ui-smaller);
+	font-weight: var(--font-semibold, 600);
+	color: var(--text-muted);
+	padding: var(--size-4-1) var(--size-4-2);
+	margin-top: var(--size-4-2);
+	border-radius: var(--radius-s);
+	cursor: pointer;
+}
+
+.llm-review-group-heading:hover {
+	background-color: var(--nav-item-background-hover, var(--background-modifier-hover));
+}
+
+.llm-review-group-heading__chevron {
+	display: flex;
+	align-items: center;
+	color: var(--text-faint);
+}
+
+.llm-review-group-heading__chevron .svg-icon {
+	width: var(--icon-s, 16px);
+	height: var(--icon-s, 16px);
+}
+
 .llm-review-item {
 	padding: var(--size-4-1) var(--size-4-3);
 	border-radius: var(--radius-s);
