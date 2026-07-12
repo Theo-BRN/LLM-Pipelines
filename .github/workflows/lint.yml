@@ -12,17 +12,23 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [20.x, 22.x]
-                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+                # Claude Fable's notes on a changing from default 
+                # Node 18 to Node 24 in the build matrix:
+                # here is build tooling only (the plugin runs inside
+                # Node here is build tooling only (the plugin runs inside
+                # Obsidian's Electron). Needs Node 24+: its npm 11 resolves
+                # vite's optional esbuild peer the same way as local dev,
+                # while the npm 10 bundled with Node ≤22 rejects the lockfile.
+                node-version: [24.x]
 
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v5
             - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v5
               with:
                   node-version: ${{ matrix.node-version }}
                   cache: "npm"
             - run: npm ci
             - run: npm run build --if-present
+            - run: npm test
             - run: npm run lint
-
