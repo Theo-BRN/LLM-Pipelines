@@ -72,10 +72,9 @@ export class ReviewDetailView extends ItemView {
 
 		const promptContent =
 			this.item.promptContent || "No prompt data saved.";
-		const noteContent =
-			this.item.originalContent || "No original content saved.";
+		const inputContent = this.item.originalContent || "No input saved.";
 
-		const leftMarkdown = `# Source: ${promptLink}\n${promptContent}\n\n---\n\n# Target: ${noteLink}\n${noteContent}`;
+		const leftMarkdown = `# Source: ${promptLink}\n${promptContent}\n\n---\n\n# Input: ${noteLink}\n${inputContent}`;
 
 		await MarkdownRenderer.render(
 			this.app,

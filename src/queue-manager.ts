@@ -11,6 +11,9 @@ export interface ReviewItem {
 	filePath: string;
 	proposedContent: string;
 	promptContent: string;
+	// The note-derived input actually sent to the model — may be less than the
+	// full note (title only, or frontmatter stripped) depending on the
+	// pipeline's promptInput mode.
 	originalContent: string;
 	modelName: string;
 	timestamp: number;

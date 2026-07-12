@@ -1,4 +1,5 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
+import { PromptInputMode } from "./prompt-input";
 import LLMPipelinesPlugin from "./main";
 
 export type DestinationType =
@@ -20,6 +21,9 @@ export interface Pipeline {
 	// a note as done. Optional so pipelines persisted before this field default
 	// to "off" (undefined is falsy).
 	removeTriggerOnApprove?: boolean;
+	// What part of the note is sent to the model. Optional so pipelines
+	// persisted before this field existed default to "full".
+	promptInput?: PromptInputMode;
 }
 
 export interface LLMPipelinesSettings {
@@ -37,6 +41,7 @@ export const DEFAULT_SETTINGS: LLMPipelinesSettings = {
 			destination: "Replace Section",
 			modelId: "gemma3:1b",
 			removeTriggerOnApprove: false,
+			promptInput: "full",
 		},
 		{
 			id: "title-generator",
@@ -47,6 +52,7 @@ export const DEFAULT_SETTINGS: LLMPipelinesSettings = {
 			destination: "Prepend",
 			modelId: "gemma3:1b",
 			removeTriggerOnApprove: false,
+			promptInput: "full",
 		},
 	],
 };

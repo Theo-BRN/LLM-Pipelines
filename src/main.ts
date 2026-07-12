@@ -7,6 +7,7 @@ import {
 } from "./settings";
 import { streamOllama } from "./ollama-engine";
 import { reportError } from "./notify";
+import { selectPromptInput } from "./prompt-input";
 import { getPromptTemplate } from "./vault-helpers";
 import { QueueManager } from "./queue-manager";
 import { PipelineSuggester } from "./pipeline-manager";
@@ -199,12 +200,20 @@ export default class LLMPipelinesPlugin extends Plugin {
 						this.app,
 						pipeline.promptPath,
 					);
+					const input = selectPromptInput(
+						pipeline.promptInput,
+						file.basename,
+						content,
+					);
 
 					// LLM is 'Writing' or 'Thinking' TODO try capture thinking from thinking models
 					this.session.status = "writing";
 					this.updateStatusBar("writing");
 
-					const fullPrompt = `${template}\n\n${content}`;
+					// Deliberately no separator: spacing between prompt and
+					// input belongs in the prompt file, so what's concatenated
+					// here is exactly what the user authored.
+					const fullPrompt = template + input;
 
 					try {
 						await streamOllama(
@@ -232,11 +241,13 @@ export default class LLMPipelinesPlugin extends Plugin {
 						break;
 					}
 
+					// Store `input`, not the raw file content: the review
+					// screen must show exactly what the model received.
 					await this.queueManager.addToReview(
 						file.path,
 						this.session.currentOutput,
 						template,
-						content,
+						input,
 						pipeline.id,
 						this.session.actualModelName || pipeline.modelId,
 					);

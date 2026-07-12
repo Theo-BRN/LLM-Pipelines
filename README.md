@@ -13,9 +13,15 @@ result before anything is written to your vault.
    streams each one through your local model.
 4. Results are **not** written to notes. They land in a sidecar
    `review-queue.json` ("Limbo").
-5. Review each item (prompt + source vs. proposed output) and **Approve** (write
+5. Review each item (prompt + input vs. proposed output) and **Approve** (write
    the output, swap trigger tag → output tag, drop from queue) or **Reject**
    (drop from queue).
+
+Each pipeline also chooses its **prompt input** — the full note, the note
+without YAML frontmatter, or just the title. The prompt note's contents are
+sent followed *directly* by that input: no separator is added, so any spacing
+between prompt and input belongs at the end of your prompt file. The review
+screen shows exactly what the model received.
 
 > **Core rule:** the LLM never writes to a `.md` file until you approve.
 

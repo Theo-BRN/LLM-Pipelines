@@ -1,5 +1,6 @@
 import { App, Modal, Setting, TextComponent } from "obsidian";
 import { Pipeline, DestinationType } from "./settings";
+import { PromptInputMode } from "./prompt-input";
 import { attachTagSuggest } from "./tag-input";
 import { normaliseTagInput, resolveOutputTag } from "./tag-utils";
 import { reportError } from "./notify";
@@ -126,12 +127,34 @@ export class PipelineEditModal extends Modal {
 					}),
 			);
 
-		new Setting(contentEl).setName("Prompt path").addText((text) =>
-			text.setValue(this.pipeline.promptPath).onChange(async (value) => {
-				this.pipeline.promptPath = value;
-				await this.plugin.saveSettings();
-			}),
-		);
+		new Setting(contentEl)
+			.setName("Prompt path")
+			.setDesc(
+				"File path to the prompt note. The prompt is followed directly by the input content.",
+			)
+			.addText((text) =>
+				text
+					.setValue(this.pipeline.promptPath)
+					.onChange(async (value) => {
+						this.pipeline.promptPath = value;
+						await this.plugin.saveSettings();
+					}),
+			);
+
+		new Setting(contentEl)
+			.setName("Input content")
+			.setDesc("What part of each note is sent to the model, following the prompt.")
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption("full", "Full note")
+					.addOption("body", "Note without frontmatter")
+					.addOption("title", "Title only")
+					.setValue(this.pipeline.promptInput ?? "full")
+					.onChange(async (value) => {
+						this.pipeline.promptInput = value as PromptInputMode;
+						await this.plugin.saveSettings();
+					}),
+			);
 
 		new Setting(contentEl).setName("Destination").addDropdown((dropdown) =>
 			dropdown
