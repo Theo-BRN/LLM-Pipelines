@@ -31,6 +31,19 @@ screen shows exactly what the model received.
   least one model pulled (e.g. `ollama pull gemma3:1b`).
 - Desktop Obsidian (this plugin is desktop-only).
 
+## Installation
+
+Not yet in the Community Plugins catalog — install via
+[BRAT](https://github.com/TfTHacker/obsidian42-brat):
+
+1. Install and enable **BRAT** from **Settings → Community plugins**.
+2. In BRAT's settings, select **Add beta plugin** and enter
+   `Theo-BRN/LLM-Pipelines`.
+3. Enable **LLM Pipelines** in **Settings → Community plugins**.
+
+BRAT installs the latest GitHub release of this repo and can keep it updated
+as new versions are tagged.
+
 ## Development
 
 - `npm install`
