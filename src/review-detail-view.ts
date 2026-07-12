@@ -41,86 +41,71 @@ export class ReviewDetailView extends ItemView {
 		contentEl.empty();
 		if (!this.item) return;
 
-		contentEl.setCssStyles({
-			display: "flex",
-			flexDirection: "column",
-			height: "100%",
-			padding: "0",
-			backgroundColor: "var(--background-primary)",
-		});
+		contentEl.addClass("llm-review-detail");
 
-		const mainGrid = contentEl.createEl("div", {
-			attr: {
-				style: "display: grid; grid-template-columns: 1fr 1fr; flex: 1; overflow: hidden;",
-			},
+		const panes = contentEl.createEl("div", {
+			cls: "llm-review-detail__panes",
 		});
-
-		const leftCol = mainGrid.createEl("div", {
-			attr: {
-				style: "overflow-y: auto; padding: 30px; border-right: 1px solid var(--divider-color); background: var(--background-primary);",
-			},
+		const outputPane = panes.createEl("div", {
+			cls: "llm-review-detail__pane",
+		});
+		const sentPane = panes.createEl("div", {
+			cls: "llm-review-detail__pane",
 		});
 
 		const pipeline = this.plugin.settings.pipelines.find(
 			(p) => p.id === this.item?.pipelineId,
 		);
 
+		const noteName =
+			this.item.filePath.split("/").pop() ?? this.item.filePath;
+		const noteLink = `[[${this.item.filePath}|${noteName}]]`;
 		const promptLink = pipeline
-			? `[[${pipeline.promptPath}|Prompt: ${pipeline.name}]]`
-			: "Prompt Source";
-		const noteLink = `[[${this.item.filePath}|Note: ${this.item.filePath.split("/").pop()}]]`;
+			? `[[${pipeline.promptPath}|${pipeline.promptPath.split("/").pop() ?? pipeline.promptPath}]]`
+			: "prompt";
 
-		const promptContent =
-			this.item.promptContent || "No prompt data saved.";
-		const inputContent = this.item.originalContent || "No input saved.";
-
-		const leftMarkdown = `# Source: ${promptLink}\n${promptContent}\n\n---\n\n# Input: ${noteLink}\n${inputContent}`;
-
+		// The output comes first — it's the thing under review. "Appending" is
+		// literal: approval always appends to the original note today.
 		await MarkdownRenderer.render(
 			this.app,
-			leftMarkdown,
-			leftCol,
+			`# Appending to ${noteLink}\n${this.item.proposedContent}`,
+			outputPane,
 			this.item.filePath,
 			this,
 		);
 
-		const rightCol = mainGrid.createEl("div", {
-			attr: {
-				style: "overflow-y: auto; padding: 30px; background: var(--background-primary);",
-			},
-		});
-
+		// Beneath it, the model input: one heading, then the prompt followed
+		// directly by the note-derived input — concatenated exactly as it was
+		// sent, with no added headings or dividers.
+		const sentPayload =
+			(this.item.promptContent || "") + (this.item.originalContent || "");
 		await MarkdownRenderer.render(
 			this.app,
-			`# Proposed Output\n${this.item.proposedContent}`,
-			rightCol,
+			`# Sent to ${this.item.modelName || "model"}: ${promptLink} + ${noteLink}\n${sentPayload || "*Nothing saved for this item.*"}`,
+			sentPane,
 			this.item.filePath,
 			this,
 		);
 
-		[leftCol, rightCol].forEach((col) => {
-			col.addEventListener("click", (event: MouseEvent) => {
-				const target = event.target as HTMLElement;
-				const link = target.closest(".internal-link") as HTMLElement;
-				if (link) {
-					const path = link.getAttribute("data-href");
-					if (path) {
-						void this.app.workspace
-							.openLinkText(
-								path,
-								this.item!.filePath,
-								event.ctrlKey || event.metaKey,
-							)
-							.catch(reportError("Couldn't open link"));
-					}
+		panes.addEventListener("click", (event: MouseEvent) => {
+			const target = event.target as HTMLElement;
+			const link = target.closest(".internal-link") as HTMLElement;
+			if (link) {
+				const path = link.getAttribute("data-href");
+				if (path) {
+					void this.app.workspace
+						.openLinkText(
+							path,
+							this.item!.filePath,
+							event.ctrlKey || event.metaKey,
+						)
+						.catch(reportError("Couldn't open link"));
 				}
-			});
+			}
 		});
 
 		const bannerContainer = contentEl.createEl("div", {
-			attr: {
-				style: "padding: 20px; border-top: 1px solid var(--divider-color); background: var(--background-primary); display: flex; justify-content: flex-end; gap: 12px; margin-bottom: var(--status-bar-height, 30px);",
-			},
+			cls: "llm-review-detail__actions",
 		});
 
 		const rejectBtn = bannerContainer.createEl("button", {
