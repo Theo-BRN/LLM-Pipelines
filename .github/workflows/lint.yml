@@ -14,7 +14,6 @@ jobs:
             matrix:
                 # Claude Fable's notes on a changing from default 
                 # Node 18 to Node 24 in the build matrix:
-                # here is build tooling only (the plugin runs inside
                 # Node here is build tooling only (the plugin runs inside
                 # Obsidian's Electron). Needs Node 24+: its npm 11 resolves
                 # vite's optional esbuild peer the same way as local dev,
